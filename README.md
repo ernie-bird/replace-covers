@@ -1,6 +1,6 @@
 # **Cover Replacement Automation Tool**
 
-This repository contains two Python utilities that automate first-page replacement and restoration across large collections of PDF score files. The tools are designed for workflows in theatrical music publishing, where each show has multiple files requiring consistent first-page covers, backups, and replacements.
+This repository contains two Python scripts that automate first-page replacement and restoration across large collections of PDF score files. The tools are designed for workflows in music publishing, where each show has multiple files requiring consistent first-page covers replacements.
 
 **Overview**
 
@@ -8,10 +8,9 @@ The repository includes:
 
 * `replacecovers.py` — replaces the first page of each target PDF with a new cover page and optionally adds a blank page after it.
 * `reverse_replacecovers.py` — restores the original PDF by reversing the operation, bringing back the previous first page from backup files.
-* `settings.json` — configuration file controlling how the scripts determine what is important vs. unimportant content when performing replacements.
+* `settings.json` — configuration file controlling how the scripts determine what is important vs. unimportant content when performing blanking of the second page.
 
-These tools streamline content management and version control for large-scale music libraries, enabling fast and reliable updates to PDF assets.
-
+Some features, like blanking of the second page, are design for legacy titles that have incorrectly stuff written on the second page. It has to be either blanked moved to the second page.
 
 **Features**
 
@@ -21,16 +20,16 @@ These tools streamline content management and version control for large-scale mu
 * Skips files containing important sections to avoid overwriting critical information.
 * Creates automatic backups of all originals before modification.
 * Generates detailed terminal reports for every processed file.
-* Reversible: use `reverse_replacecovers.py` to restore the originals from backups.
+* Reversible: use `reverse_replacecovers.py` to restore the originals from backups in /OLD.
 
 **How It Works**
 
 The script reads configuration values from settings.json, then iterates over all PDFs in the specified show folders.
 For each file, it:
 
-1. Checks for important or unimportant keywords to decide whether to replace the first page.
+1. Checks for important or unimportant keywords to decide whether to blank the second page.
 2. Creates a backup copy in an OLD subdirectory.
-3. Inserts a new cover page (provided separately).
+3. Inserts a new cover page (provided separately in 'covers').
 4. Optionally adds a blank second page if enabled.
 5. Logs all results in the terminal, marking each operation as OK or Skipped.
 
@@ -48,10 +47,10 @@ Example Output:
 ├── reverse_replacecovers.py
 ├── settings.json
 ├── covers/
-│   ├── [SHOWCODE]_COVER.pdf
+│   ├── [SHOWCODE]-COVER.pdf
 ├── shows/
 │   ├── [SHOWCODE]/
-│   │   ├── *.pdf
+│   │   ├── [SHOWCODE]-*.pdf
 │   │   └── OLD/ (auto-created for backups) ```
 ```
 
@@ -108,10 +107,6 @@ This script:
 * Restores them to their original file paths, overwriting the modified versions.
 
 
-Requirements
-
-Python 3.8 or later
-
 
 Libraries:
 
@@ -149,7 +144,7 @@ Backup created in /shows/ADDAMS/OLD/
 Process complete. 118 files updated, 2 skipped.
 ```
 
-License MIT
+License: MIT
 
 Author
 
