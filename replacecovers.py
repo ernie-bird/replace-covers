@@ -13,8 +13,6 @@ from pypdf import PdfReader, PdfWriter, PageObject, Transformation
 from pypdf.errors import PdfReadError
 
 
-# ===================== Settings =====================
-
 DEFAULT_SETTINGS = {
     "enable_blank_second": True,
     "enable_preserve_insert": True,
@@ -60,7 +58,7 @@ def load_settings(settings_path):
         return DEFAULT_SETTINGS.copy()
 
 
-# ===================== PDF helpers =====================
+#PDF Helper
 
 def points_size(page):
     mb = page.mediabox
@@ -136,7 +134,7 @@ def unique_backup_path(global_old_dir: Path, filename: str) -> Path:
     return candidate
 
 
-# ===================== Page-2 decision logic (settings-driven) =====================
+#Page 2 logic
 
 def decide_second_page_action(page, settings: dict) -> str:
     """
@@ -187,7 +185,7 @@ def decide_second_page_action(page, settings: dict) -> str:
     return "blank" if enable_blank else "preserve"
 
 
-# ===================== Replace / Write =====================
+#Replace
 
 def replace_file_with_writer(target_pdf: Path, writer: PdfWriter, global_old_dir: Path) -> Path:
     """
@@ -220,7 +218,6 @@ def process_one(target_pdf: Path, cover_pdf: Path, global_old_dir: Path, setting
     reader_target = PdfReader(str(target_pdf))
     reader_cover = PdfReader(str(cover_pdf))
 
-    # First pages and sizes
     t_first = reader_target.pages[0]
     c_first = reader_cover.pages[0]
     t_w, t_h = points_size(t_first)
@@ -232,7 +229,6 @@ def process_one(target_pdf: Path, cover_pdf: Path, global_old_dir: Path, setting
     writer = PdfWriter()
     writer.add_page(new_first)
 
-    # Page 2 handling
     has_second = len(reader_target.pages) >= 2
     if has_second:
         orig_second = reader_target.pages[1]
@@ -253,18 +249,18 @@ def process_one(target_pdf: Path, cover_pdf: Path, global_old_dir: Path, setting
         if orig_second is not None:
             writer.add_page(orig_second)   # new page 3
         start_idx = 2
-    else:  # "preserve"
+    else:  #preserve
         if orig_second is not None:
             writer.add_page(orig_second)
         else:
             writer.add_page(blank_second)  # ensure at least 2 pages
         start_idx = 2
 
-    # Append remaining pages (original 3..end)
+    # append remaining pages (original 3..end)
     for i in range(start_idx, len(reader_target.pages)):
         writer.add_page(reader_target.pages[i])
 
-    # Write and backup
+    # write and backup
     backup_path = replace_file_with_writer(target_pdf, writer, global_old_dir)
 
     return {
@@ -277,7 +273,7 @@ def process_one(target_pdf: Path, cover_pdf: Path, global_old_dir: Path, setting
     }
 
 
-# ===================== Single-line Progress Bar + Log =====================
+#progress bar
 
 def _supports_ansi() -> bool:
     return sys.stdout.isatty()
@@ -313,7 +309,7 @@ def log_and_refresh(msg: str, done: int, total: int, status: str):
     print_progress(done, total, status)
 
 
-# ===================== CLI / Main =====================
+#main 
 
 def auto_report_path(show_dir: Path, showcode: str):
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -346,17 +342,17 @@ def main():
         print(f"❌ ERROR: Show folder not found under root: {show_dir}")
         sys.exit(1)
 
-    # Single global OLD folder under the show folder
+    # OLD folder under the show folder
     global_old_dir = show_dir / "OLD"
     global_old_dir.mkdir(parents=True, exist_ok=True)
 
-    # Build maps (filtered by showcode prefix)
+    #build maps (filtered by showcode prefix)
     cover_map = build_cover_map(covers_dir, args.showcode)
     targets = {}
     for name, path in iter_show_pdfs(show_dir, args.showcode):
         targets.setdefault(name, []).append(path)
 
-    # Prepare the list of actual work items (only those with matching covers)
+    #prepare the list of actual work items (only those with matching covers)
     work_items = []
     for name, paths in targets.items():
         cover = cover_map.get(name)
@@ -367,7 +363,7 @@ def main():
 
     total_to_process = len(work_items)
 
-    # Report path
+    #report path
     report_path = Path(args.report).expanduser().resolve() if args.report else auto_report_path(show_dir, args.showcode)
 
     print(f"🗂️  Show folder: {show_dir}")
@@ -378,7 +374,7 @@ def main():
     updated_rows = []
     missing_cover_names = [name for name in targets.keys() if name not in cover_map]
 
-    # Kick off progress bar; keep it on one line throughout processing
+    #kick off progress bar; keep it on one line throughout processing
     done = 0
     print_progress(done, total_to_process)
 
@@ -409,10 +405,10 @@ def main():
             done += 1
             log_and_refresh(msg, done, total_to_process, "❌")
 
-    # Covers present but no target with that name (info only)
+    #covers present but no target with that name (info only)
     missing_in_book = set(cover_map.keys()) - set(targets.keys())
 
-    # Add missing lines to CSV
+    #add missing lines to CSV
     for nm in sorted(set(missing_cover_names)):
         updated_rows.append({
             "action": "no_cover_for_book_file",
@@ -428,7 +424,7 @@ def main():
             "backup_path": "",
         })
 
-    # Write CSV
+    #write CSV
     fieldnames = [
         "action",
         "name",
@@ -449,10 +445,10 @@ def main():
                 row.setdefault(key, "")
             w.writerow(row)
 
-    # Summary
+    #summary
     print("\n📊 ================ SUMMARY ================\n")
-    print(f"ℹ️  Covers considered: {len(cover_map)}")
-    print(f"ℹ️  Targets considered: {len(targets)}")
+    print(f"Covers considered: {len(cover_map)}")
+    print(f"Targets considered: {len(targets)}")
     print(f"✅ Files updated: {sum(1 for r in updated_rows if r['action']=='updated')}")
     print(f"⚠️  Missing covers for: {sum(1 for r in updated_rows if r['action']=='no_cover_for_book_file')}")
     print(f"⚠️  Missing target files for covers: {sum(1 for r in updated_rows if r['action']=='no_book_file_for_cover')}")
