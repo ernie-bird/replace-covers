@@ -53,7 +53,7 @@ def main():
         print(f"ERROR: OLD folder not found: {old_dir}")
         raise SystemExit(1)
 
-    # Determine report path
+    #determine report path
     if args.report:
         report_path = Path(args.report).expanduser().resolve()
     else:
@@ -91,7 +91,7 @@ def main():
             backup_path = Path(backup_path_str).expanduser().resolve()
             dest_path = Path(file_path_str).expanduser().resolve()
 
-            # Sanity: ensure both paths live under this show's folder
+            #sanity: ensure both paths live under this show's folder
             if not validate_under(show_dir, backup_path):
                 print(f"SKIP (backup not under show dir): {backup_path}")
                 continue
@@ -104,7 +104,7 @@ def main():
                 missing_backups += 1
                 continue
 
-            # Ensure destination parent exists
+            #ensure destination parent exists
             dest_path.parent.mkdir(parents=True, exist_ok=True)
 
             if args.dry_run:
@@ -114,12 +114,12 @@ def main():
 
             try:
                 if args.keep_old:
-                    # Copy back, keeping the backup in OLD
+                    #copy back, keeping the backup in OLD
                     tmp = dest_path.parent / f".__tmp_restore_{dest_path.name}"
                     shutil.copyfile(backup_path, tmp)
                     os.replace(tmp, dest_path)
                 else:
-                    # Move back (removes backup from OLD)
+                    #move back (removes backup from OLD)
                     os.replace(backup_path, dest_path)
 
                 print(f"RESTORED: {dest_path}")
@@ -128,7 +128,7 @@ def main():
                 print(f"ERROR restoring {dest_path}: {e}")
                 errors += 1
 
-    # Delete OLD folder if we are not keeping it and not in dry-run
+    #delete OLD folder if we are not keeping it and not in dry-run
     if not args.dry_run and not args.keep_old:
         try:
             shutil.rmtree(old_dir)
