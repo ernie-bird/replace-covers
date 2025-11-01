@@ -38,8 +38,8 @@ For each file, it:
 Example Output:
 
 ```CLI 
-✅ OK: BEEH-PC.pdf — page 1 replaced; page 2 blanked ⬜ (backup → /shows/BEEH/OLD)"`
-⚠️ Skipped: GREASE-PC.pdf — contains 'Table of Contents'
+✅ OK: FGDT-PC.pdf — page 1 replaced; page 2 blanked ⬜ (backup → /shows/BEEH/OLD)"`
+⚠️ Skipped: UYYU-PC.pdf — contains 'Table of Contents'
 ```
 
 **File Structure**
@@ -81,7 +81,7 @@ You can adjust these thresholds to match your library’s formatting conventions
 Run the following command:
 
 ```bash
-py replacecovers.py --covers "/replace-covers/covers" --root "replacecovers/shows" --showcode ADDA
+py replacecovers.py --covers "/replace-covers/covers" --root "replacecovers/shows" --showcode FGDT
 ```
 
 Or any showcode (ABCD, BDFD etc.) - I used ADDA as an example.
@@ -100,7 +100,7 @@ This script:
 If you need to restore the originals:
 
 ```bash
-python reverse_replacecovers.py --root "replacecovers/shows" --showcode ADDA
+python reverse_replacecovers.py --root "replacecovers/shows" --showcode FGDT
 ```
 
 This script:
@@ -140,10 +140,10 @@ Example Terminal Session
 Starting cover replacement process...
 Found 120 files to process.
 
-✅ OK: BEEH-PC.pdf — page 1 replaced; page 2 blanked
+✅ OK: FGDT-PC.pdf — page 1 replaced; page 2 blanked
 ⚠️ Skipped: GREASE-PC.pdf — detected “Table of Contents”
-✅ OK: BEEH-DS.pdf — page 1 replaced
-Backup created in /shows/ADDAMS/OLD/
+✅ OK: FGDT-DS.pdf — page 1 replaced
+Backup created in /shows/FGDT/OLD/
 
 Process complete. 118 files updated, 2 skipped.
 ```
