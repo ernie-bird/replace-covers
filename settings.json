@@ -1,0 +1,19 @@
+{
+  "enable_blank_second": true,
+  "enable_preserve_insert": true,
+
+  "unimportant_keywords": [
+    "©", "(c)", "copyright", "all rights reserved", "unauthorized",
+    "reproduction", "permission", "rights reserved"
+  ],
+  "important_keywords": [
+    "table of contents", "contents", "song list", "songlist",
+    "orchestration", "instrumentation", "index", "track list", "music list", "characters", "cast of characters", "list of songs"
+  ],
+
+  "max_short_unimportant_chars": 500,
+  "max_short_unimportant_lines": 6,
+  "important_min_words": 501,
+  "important_min_lines": 7,
+  "important_long_line_chars": 40
+}
