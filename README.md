@@ -153,7 +153,6 @@ License MIT
 
 Author
 
-Ernie Bird
-Director of Music, Theatrical Rights Worldwide
+Ernie Bird, Director of Music, Theatrical Rights Worldwide
 
 
