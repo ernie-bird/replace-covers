@@ -1,5 +1,7 @@
 # **Cover Replacement Automation Tool**
 
+MORE DETAILED DOCUMENTATION COMING SOON!
+
 This repository contains two Python scripts that automate first-page replacement and restoration across large collections of PDF score files. The tools are designed for workflows in music publishing, where each show has multiple files requiring consistent first-page covers replacements.
 
 **Overview**
@@ -79,9 +81,10 @@ You can adjust these thresholds to match your library’s formatting conventions
 Run the following command:
 
 ```bash
-python replacecovers.py
+py replacecovers.py --covers "/replace-covers/covers" --root "replacecovers/shows" --showcode ADDA
 ```
 
+Or any showcode (ABCD, BDFD etc.) - I used ADDA as an example.
 
 This script:
 
@@ -89,7 +92,7 @@ This script:
 
 * Replaces the first page with the corresponding cover from /covers.
 
-* Creates a backup of the original version in /shows/[SHOWCODE]/OLD.
+* Creates a backup of the original version in /shows/[SHOWCODE]/OLD. Duplicate names will have "_2" added.
 
 
 2. Reverse Replacement
@@ -97,15 +100,16 @@ This script:
 If you need to restore the originals:
 
 ```bash
-python reverse_replacecovers.py
+python reverse_replacecovers.py --root "replacecovers/shows" --showcode ADDA
 ```
 
 This script:
 
 * Looks for backups in each show’s OLD folder.
 
-* Restores them to their original file paths, overwriting the modified versions.
+* Uses the csv file that has original folder data.
 
+* Restores them to their original file paths, overwriting the modified versions. Duplicate names will have "_2" removed as they go back to their original folders.
 
 
 Libraries:
@@ -117,8 +121,8 @@ os, json, re, sys, tqdm
 
 **Example Workflow**
 
-1. Place all original PDFs in /shows/SHOWCODE/.
-2. Place the new cover PDF in /covers/SHOWCODE_COVER.pdf.
+1. Place all original PDFs names SHOWCODE-* in /shows/SHOWCODE/.
+2. Place the new cover PDF as /covers/SHOWCODE-*.pdf.
 3. Review and adjust `settings.json` if needed.
 4. Run `replacecovers.py` to perform replacements.
 5. Verify results and logs.
@@ -138,7 +142,7 @@ Found 120 files to process.
 
 ✅ OK: BEEH-PC.pdf — page 1 replaced; page 2 blanked
 ⚠️ Skipped: GREASE-PC.pdf — detected “Table of Contents”
-✅ OK: ADDAMS-VOCAL.pdf — page 1 replaced
+✅ OK: BEEH-DS.pdf — page 1 replaced
 Backup created in /shows/ADDAMS/OLD/
 
 Process complete. 118 files updated, 2 skipped.
